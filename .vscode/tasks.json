@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run with Python",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "main.py"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/src"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run with Python in IDX",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source venv/bin/activate && cd src && python3 main.py"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
