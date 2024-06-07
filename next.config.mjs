@@ -1,7 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["lokoloko.es", "www.lokoloko.es"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**lokoloko.es',
+        port: "",
+      },
+      {
+        protocol: 'https',
+        hostname: '**.net',
+        port: "",
+      },
+    ],
   },
 };
 

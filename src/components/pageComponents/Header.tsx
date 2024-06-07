@@ -20,8 +20,8 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top z-50">
-      <nav>
+    <header className="sticky top-0 z-50">
+      <nav className="bg-background">
         <div className="flex justify-between px-12 py-4">
           <div className="flex items-center">
             <TypographyH4>Anime Scraper</TypographyH4>
