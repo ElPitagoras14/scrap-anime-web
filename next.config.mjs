@@ -9,7 +9,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**.net',
+        hostname: process.env.NEXT_PUBLIC_IMAGE_URL,
         port: "",
       },
     ],

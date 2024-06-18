@@ -276,7 +276,7 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
                   onClick={downloadRange}
                 >
                   {isLoadingDownload && (
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                    <Icons.spinner className="mr-2 h-6 w-6 animate-spin" />
                   )}
                   <TypographyH5 className="font-normal">Descargar</TypographyH5>
                 </Button>
