@@ -9,7 +9,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { TypographyH2 } from "@/components/ui/typography";
-import { useAppSelector } from "@/redux/hooks";
+import { cancelDownload, quitFromHistory, quitFromQueue } from "@/redux/features/downloadSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Download } from "@/utils/interfaces";
 import { useState } from "react";
 
@@ -17,6 +18,9 @@ export default function Downloads() {
   const { queue, downloading, history } = useAppSelector(
     (state: { downloadReducer: any }) => state.downloadReducer
   );
+  const dispatch = useAppDispatch();
+
+
   const [showQueue, setShowQueue] = useState<Download[]>(queue);
   const [showDownloading, setShowDownloading] =
     useState<Download[]>(downloading);
@@ -35,6 +39,18 @@ export default function Downloads() {
     setShowDownloading(deepParseState.downloading);
     setShowHistory(deepParseState.history);
   }, 500);
+
+  const handleCancelDownload = (id: string) => {
+    dispatch(cancelDownload({ id }));
+  }
+
+  const handleQuitFromQueue = (id: string) => {
+    dispatch(quitFromQueue({ id }));
+  }
+
+  const handleQuitFromHistory = (id: string) => {
+    dispatch(quitFromHistory({ id }));
+  }
 
   return (
     <>
@@ -68,6 +84,7 @@ export default function Downloads() {
                       isFinished={false}
                       progress={progress}
                       totalSize={totalSize}
+                      fn={() => handleCancelDownload(id)}
                     ></DownloadCard>
                   );
                 })}
@@ -96,6 +113,7 @@ export default function Downloads() {
                       isFinished={true}
                       progress={progress}
                       totalSize={totalSize}
+                      fn={() => handleQuitFromQueue(id)}
                     ></DownloadCard>
                   );
                 })}
@@ -126,6 +144,7 @@ export default function Downloads() {
                       isFinished={true}
                       progress={progress}
                       totalSize={totalSize}
+                      fn={() => handleQuitFromHistory(id)}
                     ></DownloadCard>
                   );
                 })}

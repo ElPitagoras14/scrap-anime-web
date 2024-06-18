@@ -14,6 +14,7 @@ interface DownloadCardProps {
   isFinished: boolean;
   progress: number;
   totalSize?: number;
+  fn: () => void;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -32,6 +33,7 @@ export const DownloadCard = ({
   isFinished,
   progress,
   totalSize = 0,
+  fn,
 }: DownloadCardProps) => {
   const newDate = new Date(date);
   const formattedDate = format(newDate, "yyyy-MM-dd HH:mm");
@@ -63,7 +65,7 @@ export const DownloadCard = ({
           className="absolute top-2 end-2 rounded-full m-0 px-1.5 py-2"
           variant="ghost"
         >
-          <X className="h-7 w-7"></X>
+          <X className="h-7 w-7" onClick={fn}></X>
         </Button>
       </div>
     </Card>

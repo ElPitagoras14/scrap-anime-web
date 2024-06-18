@@ -29,7 +29,7 @@ export const downloadSlice = createSlice({
     },
     updateDownload: (
       state,
-      action: PayloadAction<{ id: string; progress: number, total: number }>
+      action: PayloadAction<{ id: string; progress: number; total: number }>
     ) => {
       const index = state.downloading.findIndex(
         (d) => d.id === action.payload.id
@@ -56,6 +56,18 @@ export const downloadSlice = createSlice({
         state.downloading.splice(index, 1);
       }
     },
+    quitFromQueue: (state, action: PayloadAction<{ id: string }>) => {
+      const index = state.queue.findIndex((d) => d.id === action.payload.id);
+      if (index !== -1) {
+        state.queue.splice(index, 1);
+      }
+    },
+    quitFromHistory: (state, action: PayloadAction<{ id: string }>) => {
+      const index = state.history.findIndex((d) => d.id === action.payload.id);
+      if (index !== -1) {
+        state.history.splice(index, 1);
+      }
+    },
   },
 });
 
@@ -65,6 +77,8 @@ export const {
   updateDownload,
   finishDownload,
   cancelDownload,
+  quitFromQueue,
+  quitFromHistory,
 } = downloadSlice.actions;
 
 export default downloadSlice.reducer;
