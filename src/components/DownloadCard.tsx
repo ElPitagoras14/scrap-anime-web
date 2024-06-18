@@ -2,18 +2,23 @@ import Image from "next/image";
 import { Card } from "./ui/card";
 import { TypographyH6, TypographySmall } from "./ui/typography";
 import { Progress } from "./ui/progress";
-import { X } from "lucide-react";
+import { Play, X } from "lucide-react";
 import { Button } from "./ui/button";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
+import { useState } from "react";
+import { Icons } from "./ui/icons";
 
 interface DownloadCardProps {
   anime: string;
-  description: string;
+  title: string;
   imageSrc: string;
-  date: string;
+  date: Date;
   isFinished: boolean;
   progress: number;
   totalSize?: number;
+  isReady?: boolean;
+  deleteFn: () => void;
+  playFn?: () => void;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -26,15 +31,22 @@ const formatFileSize = (bytes: number): string => {
 
 export const DownloadCard = ({
   anime,
-  description,
+  title,
   imageSrc,
   date,
   isFinished,
   progress,
   totalSize = 0,
+  isReady = false,
+  deleteFn,
+  playFn,
 }: DownloadCardProps) => {
   const newDate = new Date(date);
   const formattedDate = format(newDate, "yyyy-MM-dd HH:mm");
+
+  const [isLoadingPlay, setIsLoadingPlay] = useState<Boolean>(false);
+  const [isLoadingDelete, setIsLoadingDelete] = useState<Boolean>(false);
+
   return (
     <Card>
       <div className="relative flex items-center space-x-4 p-4">
@@ -47,11 +59,12 @@ export const DownloadCard = ({
         ></Image>
         <div className="flex flex-col w-full">
           <TypographyH6>
-            {anime} - {description}
+            {anime} - {title}
           </TypographyH6>
           <TypographySmall>{formattedDate}</TypographySmall>
           <TypographySmall>
-            {totalSize > 0 ? formatFileSize(totalSize) : ""}
+            {totalSize > 0 ? formatFileSize(totalSize) : ""}{" "}
+            {progress === 0 ? "" : " - " + progress + "%"}
           </TypographySmall>
           <Progress
             value={isFinished ? 100 : progress}
@@ -59,12 +72,53 @@ export const DownloadCard = ({
             progressColor={isFinished ? "bg-accent" : "bg-primary"}
           ></Progress>
         </div>
-        <Button
-          className="absolute top-2 end-2 rounded-full m-0 px-1.5 py-2"
-          variant="ghost"
-        >
-          <X className="h-7 w-7"></X>
-        </Button>
+        {!isReady &&
+          (!isLoadingPlay ? (
+            <Button
+              className="absolute top-2 end-12 rounded-full m-0 px-2 py-2"
+              variant="ghost"
+            >
+              <Play
+                className="h-6 w-6"
+                onClick={() => {
+                  setIsLoadingPlay(true);
+                  setTimeout(() => {
+                    if (playFn) {
+                      playFn();
+                    }
+                  }, 200);
+                }}
+              ></Play>
+            </Button>
+          ) : (
+            <Button
+              className="absolute top-2 end-12 rounded-full m-0 px-2 py-2"
+              variant="ghost"
+            >
+              <Icons.spinner className="h-6 w-6 animate-spin" />
+            </Button>
+          ))}
+        {isLoadingDelete ? (
+          <Button
+            className="absolute top-2 end-2 rounded-full m-0 px-2 py-2"
+            variant="ghost"
+          >
+            <Icons.spinner className="h-6 w-6 animate-spin" />
+          </Button>
+        ) : (
+          <Button
+            className="absolute top-2 end-2 rounded-full m-0 px-2 py-2"
+            variant="ghost"
+            onClick={() => {
+              setIsLoadingDelete(true);
+              setTimeout(() => {
+                deleteFn();
+              }, 200);
+            }}
+          >
+            <X className="h-6 w-6"></X>
+          </Button>
+        )}
       </div>
     </Card>
   );

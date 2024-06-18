@@ -12,7 +12,6 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import downloadReducer from "./features/downloadSlice";
-import savedReducer from "./features/saveSlice";
 
 const persistDownloadConfig = {
   key: "download",
@@ -23,16 +22,9 @@ const persistDownloadReducer = persistReducer(
   downloadReducer
 );
 
-const persistSaveConfig = {
-  key: "save",
-  storage,
-};
-const persistSaveReducer = persistReducer(persistSaveConfig, savedReducer);
-
 export const store = configureStore({
   reducer: {
     downloadReducer: persistDownloadReducer,
-    saveReducer: persistSaveReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

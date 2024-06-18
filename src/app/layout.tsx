@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ReduxProvider } from "@/redux/ReduxProvider";
-import DownloadManager from "@/components/DownloadManager";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -39,7 +38,6 @@ export default function RootLayout({
         >
           <ReduxProvider>
             {children}
-            <DownloadManager></DownloadManager>
           </ReduxProvider>
           <Toaster></Toaster>
         </ThemeProvider>

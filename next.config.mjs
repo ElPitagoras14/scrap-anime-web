@@ -4,12 +4,12 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**lokoloko.es',
+        hostname: process.env.NEXT_PUBLIC_IMAGE1_URL,
         port: "",
       },
       {
         protocol: 'https',
-        hostname: '**.net',
+        hostname: process.env.NEXT_PUBLIC_IMAGE2_URL,
         port: "",
       },
     ],

@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { EpisodeInfo } from "@/components/EpisodeInfo";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { addToQueue } from "@/redux/features/downloadSlice";
@@ -34,9 +34,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { unsaveAnime, saveAnime } from "@/redux/features/saveSlice";
 import { Bookmark } from "lucide-react";
-import { title } from "process";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -44,7 +42,7 @@ interface AnimeInfo {
   name: string;
   finished: boolean;
   description: string;
-  image_src: string;
+  imageSrc: string;
 }
 
 export default function AnimeDetail({ params }: { params: { name: string } }) {
@@ -53,45 +51,69 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
     name: "",
     finished: false,
     description: "",
-    image_src: "",
+    imageSrc: "",
   });
-  const { name, finished, description, image_src: imageSrc } = animeInfo || {};
+  const { name, finished, description, imageSrc } = animeInfo || {};
   const [streamingLinks, setStreamingLinks] = useState([]);
 
   const { toast } = useToast();
   const dispatch = useAppDispatch();
-  const { saved } = useAppSelector((state) => state.saveReducer);
-  const [isSaved, setIsSaved] = useState<boolean>(
-    saved.hasOwnProperty(animeId)
-  );
+  const [isSaved, setIsSaved] = useState<boolean>(false);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingAnimeInfo, setIsLoadingAnimeInfo] = useState(true);
   const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(true);
   const [isLoadingDownload, setIsLoadingDownload] = useState(false);
+  const [isLoadingSavedInfo, setIsLoadingSavedInfo] = useState(true);
 
   const [range, setRange] = useState<string>("");
 
   useEffect(() => {
-    setIsLoading(true);
-    setIsLoadingEpisodes(true);
-
-    const options = {
+    const animeInfoOptions = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
       url: `${BACKEND_URL}/api/v1/anime/info/${animeId}`,
     };
-    axios(options)
+    axios(animeInfoOptions)
       .then((response) => {
         const {
           data: { payload },
         } = response;
         setAnimeInfo(payload);
-        setIsLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching data", error);
+        toast({
+          title: "Error fetching data",
+          description: "Please try again later.",
+        });
+      })
+      .finally(() => {
+        setIsLoadingAnimeInfo(false);
+      });
+
+    const savedInfoOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      url: `${BACKEND_URL}/api/v1/anime/saved/${animeId}`,
+    };
+    axios(savedInfoOptions)
+      .then((response) => {
+        const {
+          data: { payload },
+        } = response;
+        setIsSaved(Boolean(payload));
+      })
+      .catch((error) => {
+        toast({
+          title: "Error fetching data",
+          description: "Please try again later.",
+        });
+      })
+      .finally(() => {
+        setIsLoadingSavedInfo(false);
       });
 
     const streamingLinkOptions = {
@@ -109,19 +131,23 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
           },
         } = response;
         setStreamingLinks(episodes);
-        setIsLoadingEpisodes(false);
       })
       .catch((error) => {
-        console.error("Error fetching data", error);
+        toast({
+          title: "Error fetching data",
+          description: "Please try again later.",
+        });
+      })
+      .finally(() => {
+        setIsLoadingEpisodes(false);
       });
-  }, [animeId]);
+  }, [animeId, toast]);
 
   const examplesLength = 8;
   const exampleArray = Array.from({ length: examplesLength }, (_, i) => i);
 
   const downloadRange = () => {
     setIsLoadingDownload(true);
-
     const options = {
       method: "POST",
       headers: {
@@ -146,30 +172,90 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
             payload: { episodes },
           },
         } = response;
+
         episodes.forEach((episode: any) => {
-          const { name, link, episode_id: episodeId } = episode;
+          const { title, link, episodeId } = episode;
+
           dispatch(
             addToQueue({
               id: uuidv4(),
               fileUrl: link,
               fileName: `${animeId} - Episode ${episodeId}.mp4`,
-              date: new Date().toISOString(),
+              date: new Date(),
               anime: animeId,
+              isReady: false,
               episodeId,
-              description: name,
+              title,
               imageSrc,
               progress: 0,
             })
           );
-          setIsLoadingDownload(false);
         });
+
         toast({
-          title: `Downloading episodes`,
+          title: `Adding to download queue`,
           description: `Episodes ${range}.`,
         });
       })
       .catch((error) => {
-        console.error("Error fetching data", error);
+        toast({
+          title: "Error downloading range",
+          description: "Please try again later.",
+        });
+      })
+      .finally(() => {
+        setIsLoadingDownload(false);
+      });
+  };
+
+  const saveAnime = () => {
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      url: `${BACKEND_URL}/api/v1/anime/saved`,
+      data: {
+        anime_id: animeId,
+        name,
+        image_src: imageSrc,
+      },
+    };
+    axios(options)
+      .then((response) => {
+        setIsSaved(true);
+        toast({
+          title: `${name} added to saved`,
+        });
+      })
+      .catch((error) => {
+        toast({
+          title: "Error saving anime",
+          description: "Please try again later.",
+        });
+      });
+  };
+
+  const unsaveAnime = () => {
+    const options = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      url: `${BACKEND_URL}/api/v1/anime/saved/single/${animeId}`,
+    };
+    axios(options)
+      .then((response) => {
+        setIsSaved(false);
+        toast({
+          title: `${name} removed from saved`,
+        });
+      })
+      .catch((error) => {
+        toast({
+          title: "Error removing anime",
+          description: "Please try again later.",
+        });
       });
   };
 
@@ -178,7 +264,7 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
       <Header></Header>
       <main className="flex justify-center">
         <div className="grid grid-cols-4 py-10 space-x-24 px-12">
-          {isLoading ? (
+          {isLoadingAnimeInfo || isLoadingSavedInfo ? (
             <div className="flex flex-col space-y-4 text-center">
               <Skeleton className="w-[300px] h-[427px]"></Skeleton>
               <Skeleton className="w-[300px] h-[50px]"></Skeleton>
@@ -201,25 +287,9 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isSaved) {
-                    dispatch(
-                      unsaveAnime({
-                        animeId,
-                      })
-                    );
-                    toast({
-                      title: `${name} removed from saved`,
-                    });
+                    unsaveAnime();
                   } else {
-                    dispatch(
-                      saveAnime({
-                        title,
-                        imageSrc,
-                        animeId,
-                      })
-                    );
-                    toast({
-                      title: `${name} added to saved`,
-                    });
+                    saveAnime();
                   }
                   setIsSaved(!isSaved);
                 }}
@@ -262,7 +332,7 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
           )}
           <div className="col-span-3 h-[500px]">
             <div className="flex justify-between items-center pt-2 pb-4 pl-6 pr-4">
-              <TypographyH3>Episodios</TypographyH3>
+              <TypographyH3>Episodes</TypographyH3>
               <div className="flex space-x-4">
                 <Input
                   placeholder="1-5,7,8-10,12"
@@ -272,13 +342,19 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
                 <Button
                   size="default"
                   variant="secondary"
-                  disabled={isLoading || !range || isLoadingDownload}
+                  disabled={
+                    isLoadingAnimeInfo ||
+                    isLoadingSavedInfo ||
+                    !range ||
+                    isLoadingDownload ||
+                    isLoadingEpisodes
+                  }
                   onClick={downloadRange}
                 >
                   {isLoadingDownload && (
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                    <Icons.spinner className="mr-2 h-6 w-6 animate-spin" />
                   )}
-                  <TypographyH5 className="font-normal">Descargar</TypographyH5>
+                  <TypographyH5 className="font-normal">Download</TypographyH5>
                 </Button>
               </div>
             </div>
@@ -289,7 +365,7 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Id</TableHead>
-                      <TableHead>Description</TableHead>
+                      <TableHead>Title</TableHead>
                       <TableHead className="text-center">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -308,18 +384,18 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Id</TableHead>
-                      <TableHead>Description</TableHead>
+                      <TableHead>Title</TableHead>
                       <TableHead className="text-center">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {streamingLinks.map((episode) => {
-                      const { name, link, episode_id: episodeId } = episode;
+                      const { title, link, episodeId } = episode;
                       return (
                         <EpisodeInfo
                           key={episodeId}
                           episodeId={episodeId}
-                          description={name}
+                          title={title}
                           anime={animeId}
                           imageSrc={imageSrc}
                           streamingLink={link}

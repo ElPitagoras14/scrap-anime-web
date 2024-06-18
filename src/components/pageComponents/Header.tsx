@@ -5,11 +5,17 @@ import { ModeToggle } from "../ModeToggle";
 import { TypographyH4, TypographyH5 } from "../ui/typography";
 import { Input } from "@/components/ui/input";
 import { Separator } from "../ui/separator";
-import { Search } from "lucide-react";
+import { Search, Settings } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
+import { useAppSelector } from "@/redux/hooks";
 
 export const Header = () => {
+  const { queue } = useAppSelector(
+    (state: { downloadReducer: any }) => state.downloadReducer
+  );
+
   const [animeName, setAnimeName] = useState<string>("");
   const router = useRouter();
 
@@ -28,7 +34,9 @@ export const Header = () => {
           </div>
           <div className="flex items-center space-x-6 text-nowrap">
             <Link href={"/downloads"} className="hover:text-primary">
-              <TypographyH5>Downloads</TypographyH5>
+              <TypographyH5>
+                Downloads {queue.length > 0 ? `(${queue.length})` : ""}
+              </TypographyH5>
             </Link>
             <Link href={"/saved"} className="hover:text-primary">
               <TypographyH5>Saved Anime</TypographyH5>
@@ -48,6 +56,15 @@ export const Header = () => {
               onKeyDown={handleKeyDown}
             />
             <ModeToggle></ModeToggle>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => {
+                router.push("/settings");
+              }}
+            >
+              <Settings></Settings>
+            </Button>
           </div>
         </div>
       </nav>

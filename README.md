@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Anime Scraper Frontend
+
+## Description
+
+Anime Scraper Frontend is a web application built with Next.js to display and manage anime data and download links.
+
+## Requirements
+
+- Node.js 14+
+- npm or yarn
+- Docker (Only for Docker use)
+- Run the [Anime Scraper API](https://github.com/ElPitagoras14/scrap-anime-api).
 
 ## Getting Started
 
-First, run the development server:
+### Docker Use
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Clone the repository:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   ```bash
+   git clone https://github.com/ElPitagoras14/anime-scraper-frontend.git
+   cd anime-scraper-frontend
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. Rename the file `docker-compose-example.yaml` to `docker-compose.yaml`.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+3. Fill the following environment variables in `docker-compose.yaml`.
 
-## Learn More
+   ```env
+   NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:8000
+   NEXT_PUBLIC_IMAGE1_URL=
+   NEXT_PUBLIC_IMAGE2_URL=
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Create an `.env` file with the following variable:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```env
+   COMPOSE_PROJECT_NAME=front-scraper
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+3. Build the image:
 
-## Deploy on Vercel
+   ```bash
+   docker-compose up -d
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The server should be running at `http://127.0.0.1:3000`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Development Use
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/ElPitagoras14/anime-scraper-frontend.git
+   cd anime-scraper-frontend
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Create an `.env.local` file in the root of the project and add the following environment variables:
+
+   ```env
+   NEXT_PUBLIC_BACKEND_URL=http://127.0.0.1:8000
+   NEXT_PUBLIC_IMAGE1_URL=
+   NEXT_PUBLIC_IMAGE2_URL=
+   ```
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+The development server should be running at `http://127.0.0.1:3000`.
+
+## Environment Variables
+
+- `NEXT_PUBLIC_BACKEND_URL`: URL of the backend API.
+
+- `NEXT_PUBLIC_IMAGE1_URL`: Hostname for loading remote images.
+
+- `NEXT_PUBLIC_IMAGE2_URL`: Hostname for loading remote images.
+
+## Author
+
+- [Jonathan García](https://github.com/ElPitagoras14) - Computer Science Engineer

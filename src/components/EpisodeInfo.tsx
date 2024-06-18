@@ -20,7 +20,7 @@ interface EpisodeInfoProps {
   anime: string;
   streamingLink: string;
   episodeId: number;
-  description: string;
+  title: string;
   imageSrc: string;
 }
 
@@ -30,7 +30,7 @@ export const EpisodeInfo = ({
   anime,
   streamingLink,
   episodeId,
-  description,
+  title,
   imageSrc,
 }: EpisodeInfoProps) => {
   const dispatch = useAppDispatch();
@@ -41,12 +41,13 @@ export const EpisodeInfo = ({
     dispatch(
       addToQueue({
         id: uuidv4(),
+        isReady: false,
         fileUrl,
         fileName: `${anime} - Episode ${episodeId}.mp4`,
-        date: new Date().toISOString(),
+        date: new Date(),
         anime,
         episodeId,
-        description,
+        title,
         imageSrc,
         progress: 0,
       })
@@ -81,25 +82,30 @@ export const EpisodeInfo = ({
           },
         } = response;
         toast({
-          title: `Downloading episode`,
+          title: `Adding to download queue.`,
           description: `Episode ${episodeId}`,
         });
         startDownload(link);
-        setIsLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching data", error);
+        toast({
+          title: "Error fetching download link",
+          description: `Episode ${episodeId}`,
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
   const openStreamingLink = () => {
     window.open(streamingLink, "_blank");
-  }
+  };
 
   return (
     <TableRow>
       <TableCell>{episodeId}</TableCell>
-      <TableCell>{description}</TableCell>
+      <TableCell>{title}</TableCell>
       <TableCell className="flex justify-center">
         <TooltipProvider>
           {isLoading ? (
