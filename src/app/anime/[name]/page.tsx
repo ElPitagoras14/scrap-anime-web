@@ -88,10 +88,12 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
           data: { payload },
         } = response;
         setAnimeInfo(payload);
-        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching data", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
 
     const streamingLinkOptions = {
@@ -109,10 +111,12 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
           },
         } = response;
         setStreamingLinks(episodes);
-        setIsLoadingEpisodes(false);
       })
       .catch((error) => {
         console.error("Error fetching data", error);
+      })
+      .finally(() => {
+        setIsLoadingEpisodes(false);
       });
   }, [animeId]);
 
@@ -161,7 +165,6 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
               progress: 0,
             })
           );
-          setIsLoadingDownload(false);
         });
         toast({
           title: `Downloading episodes`,
@@ -170,6 +173,9 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
       })
       .catch((error) => {
         console.error("Error fetching data", error);
+      })
+      .finally(() => {
+        setIsLoadingDownload(false);
       });
   };
 

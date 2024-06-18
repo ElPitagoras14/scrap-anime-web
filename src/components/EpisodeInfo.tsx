@@ -85,16 +85,18 @@ export const EpisodeInfo = ({
           description: `Episode ${episodeId}`,
         });
         startDownload(link);
-        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching data", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
   const openStreamingLink = () => {
     window.open(streamingLink, "_blank");
-  }
+  };
 
   return (
     <TableRow>
