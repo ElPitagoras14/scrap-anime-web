@@ -9,14 +9,42 @@ import {
   finishDownload,
   cancelDownload,
 } from "@/redux/features/downloadSlice";
+import { Download } from "@/utils/interfaces";
 
 const MAX_SIMULTANEOUS_DOWNLOADS = 4;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const DownloadManager: React.FC = () => {
   const { queue, downloading } = useAppSelector(
     (state) => state.downloadReducer
   );
   const dispatch = useAppDispatch();
+
+  const saveHistory = (download: Download) => {
+    const { fileUrl, fileName, episodeId, imageSrc, totalSize } = download;
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        ...download,
+        file_url: fileUrl,
+        file_name: fileName,
+        episode_id: episodeId,
+        image_src: imageSrc,
+        total_size: totalSize,
+      },
+    };
+
+    axios(`${BACKEND_URL}/api/v1/anime/history`, options)
+      .then((response) => {
+        console.log("History saved", response);
+      })
+      .catch((error) => {
+        console.error("Error saving history", error);
+      });
+  };
 
   useEffect(() => {
     const activeDownloads = downloading;
@@ -53,7 +81,11 @@ const DownloadManager: React.FC = () => {
             window.URL.revokeObjectURL(url);
             link.remove();
 
+            const currDownload = downloading.find((d) => d.id === id);
             dispatch(finishDownload({ id }));
+            if (currDownload) {
+              saveHistory(currDownload);
+            }
           })
           .catch((error) => {
             console.error("Error downloading the file", error);

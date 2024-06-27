@@ -36,7 +36,6 @@ import {
 } from "@/components/ui/tooltip";
 import { unsaveAnime, saveAnime } from "@/redux/features/saveSlice";
 import { Bookmark } from "lucide-react";
-import { title } from "process";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -157,7 +156,7 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
               id: uuidv4(),
               fileUrl: link,
               fileName: `${animeId} - Episode ${episodeId}.mp4`,
-              date: new Date().toISOString(),
+              date: new Date(),
               anime: animeId,
               episodeId,
               description: name,
@@ -218,7 +217,7 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
                   } else {
                     dispatch(
                       saveAnime({
-                        title,
+                        title: name,
                         imageSrc,
                         animeId,
                       })

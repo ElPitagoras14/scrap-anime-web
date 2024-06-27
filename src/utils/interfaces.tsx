@@ -2,7 +2,7 @@ export interface Download {
   id: string;
   fileUrl: string;
   fileName: string;
-  date: string;
+  date: Date;
   anime: string;
   episodeId: number;
   description: string;

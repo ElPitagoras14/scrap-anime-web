@@ -4,13 +4,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 type DownloadState = {
   queue: Download[];
   downloading: Download[];
-  history: Download[];
 };
 
 const initialState: DownloadState = {
   queue: [],
   downloading: [],
-  history: [],
 };
 
 export const downloadSlice = createSlice({
@@ -44,7 +42,6 @@ export const downloadSlice = createSlice({
         (d) => d.id === action.payload.id
       );
       if (index !== -1) {
-        state.history.push(state.downloading[index]);
         state.downloading.splice(index, 1);
       }
     },
@@ -62,12 +59,6 @@ export const downloadSlice = createSlice({
         state.queue.splice(index, 1);
       }
     },
-    quitFromHistory: (state, action: PayloadAction<{ id: string }>) => {
-      const index = state.history.findIndex((d) => d.id === action.payload.id);
-      if (index !== -1) {
-        state.history.splice(index, 1);
-      }
-    },
   },
 });
 
@@ -78,7 +69,6 @@ export const {
   finishDownload,
   cancelDownload,
   quitFromQueue,
-  quitFromHistory,
 } = downloadSlice.actions;
 
 export default downloadSlice.reducer;

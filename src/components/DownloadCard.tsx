@@ -10,7 +10,7 @@ interface DownloadCardProps {
   anime: string;
   description: string;
   imageSrc: string;
-  date: string;
+  date: Date;
   isFinished: boolean;
   progress: number;
   totalSize?: number;

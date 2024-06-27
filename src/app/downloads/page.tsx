@@ -9,22 +9,20 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { TypographyH2 } from "@/components/ui/typography";
-import { cancelDownload, quitFromHistory, quitFromQueue } from "@/redux/features/downloadSlice";
+import { cancelDownload, quitFromQueue } from "@/redux/features/downloadSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Download } from "@/utils/interfaces";
 import { useState } from "react";
 
 export default function Downloads() {
-  const { queue, downloading, history } = useAppSelector(
+  const { queue, downloading } = useAppSelector(
     (state: { downloadReducer: any }) => state.downloadReducer
   );
   const dispatch = useAppDispatch();
 
-
   const [showQueue, setShowQueue] = useState<Download[]>(queue);
   const [showDownloading, setShowDownloading] =
     useState<Download[]>(downloading);
-  const [showHistory, setShowHistory] = useState<Download[]>(history);
 
   setInterval(() => {
     const storedData = localStorage.getItem("persist:download");
@@ -33,24 +31,18 @@ export default function Downloads() {
     const deepParseState = {
       queue: JSON.parse(parsedStoredData.queue),
       downloading: JSON.parse(parsedStoredData.downloading),
-      history: JSON.parse(parsedStoredData.history),
     };
     setShowQueue(deepParseState.queue);
     setShowDownloading(deepParseState.downloading);
-    setShowHistory(deepParseState.history);
   }, 500);
 
   const handleCancelDownload = (id: string) => {
     dispatch(cancelDownload({ id }));
-  }
+  };
 
   const handleQuitFromQueue = (id: string) => {
     dispatch(quitFromQueue({ id }));
-  }
-
-  const handleQuitFromHistory = (id: string) => {
-    dispatch(quitFromHistory({ id }));
-  }
+  };
 
   return (
     <>
@@ -120,35 +112,8 @@ export default function Downloads() {
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="history">
-              <AccordionTrigger>
-                History ({showHistory.length})
-              </AccordionTrigger>
-              <AccordionContent className="flex flex-col space-y-4">
-                {showHistory.map((download) => {
-                  const {
-                    id,
-                    anime,
-                    description,
-                    imageSrc,
-                    totalSize,
-                    date,
-                    progress,
-                  } = download || {};
-                  return (
-                    <DownloadCard
-                      key={id}
-                      anime={anime}
-                      description={description}
-                      imageSrc={imageSrc}
-                      date={date}
-                      isFinished={true}
-                      progress={progress}
-                      totalSize={totalSize}
-                      fn={() => handleQuitFromHistory(id)}
-                    ></DownloadCard>
-                  );
-                })}
-              </AccordionContent>
+              <AccordionTrigger>History</AccordionTrigger>
+              <AccordionContent className="flex flex-col space-y-4"></AccordionContent>
             </AccordionItem>
           </Accordion>
         </div>
