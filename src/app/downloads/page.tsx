@@ -21,7 +21,7 @@ import { Download } from "@/utils/interfaces";
 import { useState } from "react";
 
 export default function Downloads() {
-  const { queue, downloading, isPaused } = useAppSelector(
+  const { queue, downloading, isPaused, browserUse } = useAppSelector(
     (state: { downloadReducer: any }) => state.downloadReducer
   );
   const dispatch = useAppDispatch();
@@ -65,6 +65,7 @@ export default function Downloads() {
             <TypographyH2>Downloads</TypographyH2>
             <div className="flex space-x-4 items-center">
               <Switch
+                disabled={browserUse}
                 checked={isPaused}
                 onCheckedChange={(checked) => {
                   dispatch(setIsPaused(checked));

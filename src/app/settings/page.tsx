@@ -13,6 +13,7 @@ import {
   setBrowserUse,
   setAutomaticDownload,
   setMaxConcurrentDownloads,
+  setIsPaused,
 } from "@/redux/features/downloadSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
@@ -42,6 +43,7 @@ export default function Home() {
                   dispatch(setBrowserUse(checked));
                   if (checked) {
                     dispatch(setAutomaticDownload(false));
+                    dispatch(setIsPaused(false));
                   } else {
                     dispatch(setAutomaticDownload(true));
                   }
@@ -75,6 +77,10 @@ export default function Home() {
                 value={maxConcurrentDownloads}
                 disabled={!automaticDownload || browserUse}
                 onChange={(e) => {
+                  const { target: { value } = {} } = e;
+                  if (value === "") {
+                    dispatch(setMaxConcurrentDownloads(0));
+                  }
                   dispatch(setMaxConcurrentDownloads(parseInt(e.target.value)));
                 }}
               ></Input>
