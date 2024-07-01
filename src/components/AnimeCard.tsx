@@ -6,36 +6,89 @@ import { TypographyH5 } from "./ui/typography";
 import { useEffect, useState } from "react";
 import { useToast } from "./ui/use-toast";
 import { useRouter } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { saveAnime, unsaveAnime } from "@/redux/features/saveSlice";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import axios from "axios";
 
 interface AnimeCardProps {
-  title: string;
+  name: string;
   imageSrc: string;
   animeId: string;
+  saved: boolean;
 }
 
-export const AnimeCard = ({ title, imageSrc, animeId }: AnimeCardProps) => {
-  const { saved } = useAppSelector((state) => state.saveReducer);
-  const dispatch = useAppDispatch();
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+export const AnimeCard = ({
+  name,
+  imageSrc,
+  animeId,
+  saved,
+}: AnimeCardProps) => {
   const { toast } = useToast();
   const router = useRouter();
 
-  const [isSaved, setIsSaved] = useState<boolean>(
-    saved.hasOwnProperty(animeId)
-  );
+  const [isSaved, setIsSaved] = useState<boolean>(saved);
   const [showBookmark, setShowBookmark] = useState<boolean>(false);
 
   useEffect(() => {
     setShowBookmark(isSaved);
   }, [isSaved]);
+
+  const saveAnime = () => {
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      url: `${BACKEND_URL}/api/v1/anime/saved`,
+      data: {
+        anime_id: animeId,
+        name,
+        image_src: imageSrc,
+      },
+    };
+    axios(options)
+      .then((response) => {
+        setIsSaved(true);
+        toast({
+          title: `${name} added to saved`,
+        });
+      })
+      .catch((error) => {
+        toast({
+          title: "Error saving anime",
+          description: "Please try again later",
+        });
+      });
+  };
+
+  const unsaveAnime = () => {
+    const options = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      url: `${BACKEND_URL}/api/v1/anime/saved/single/${animeId}`,
+    };
+    axios(options)
+      .then((response) => {
+        setIsSaved(false);
+        toast({
+          title: `${name} removed from saved`,
+        });
+      })
+      .catch((error) => {
+        toast({
+          title: "Error removing anime",
+          description: "Please try again later",
+        });
+      });
+  };
 
   return (
     <div
@@ -68,25 +121,9 @@ export const AnimeCard = ({ title, imageSrc, animeId }: AnimeCardProps) => {
         onClick={(e) => {
           e.stopPropagation();
           if (isSaved) {
-            dispatch(
-              unsaveAnime({
-                animeId,
-              })
-            );
-            toast({
-              title: `${title} removed from saved`,
-            });
+            unsaveAnime();
           } else {
-            dispatch(
-              saveAnime({
-                title,
-                imageSrc,
-                animeId,
-              })
-            );
-            toast({
-              title: `${title} added to saved`,
-            });
+            saveAnime();
           }
           setIsSaved(!isSaved);
         }}
@@ -114,9 +151,7 @@ export const AnimeCard = ({ title, imageSrc, animeId }: AnimeCardProps) => {
           </Tooltip>
         </TooltipProvider>
       </div>
-      <TypographyH5 className="text-center mt-4 text-wrap">
-        {title}
-      </TypographyH5>
+      <TypographyH5 className="text-center mt-4 text-wrap">{name}</TypographyH5>
     </div>
   );
 };

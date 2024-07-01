@@ -4,11 +4,19 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 type DownloadState = {
   queue: Download[];
   downloading: Download[];
+  browserUse: boolean;
+  automaticDownload: boolean;
+  maxConcurrentDownloads: number;
+  isPaused: boolean;
 };
 
 const initialState: DownloadState = {
   queue: [],
   downloading: [],
+  browserUse: true,
+  automaticDownload: false,
+  maxConcurrentDownloads: 4,
+  isPaused: true,
 };
 
 export const downloadSlice = createSlice({
@@ -37,6 +45,12 @@ export const downloadSlice = createSlice({
         state.downloading[index].totalSize = action.payload.total;
       }
     },
+    setReadyDownload: (state, action: PayloadAction<{ id: string }>) => {
+      const index = state.queue.findIndex((d) => d.id === action.payload.id);
+      if (index !== -1) {
+        state.queue[index].isReady = true;
+      }
+    },
     finishDownload: (state, action: PayloadAction<{ id: string }>) => {
       const index = state.downloading.findIndex(
         (d) => d.id === action.payload.id
@@ -59,6 +73,18 @@ export const downloadSlice = createSlice({
         state.queue.splice(index, 1);
       }
     },
+    setBrowserUse: (state, action: PayloadAction<boolean>) => {
+      state.browserUse = action.payload;
+    },
+    setAutomaticDownload: (state, action: PayloadAction<boolean>) => {
+      state.automaticDownload = action.payload;
+    },
+    setMaxConcurrentDownloads: (state, action: PayloadAction<number>) => {
+      state.maxConcurrentDownloads = action.payload;
+    },
+    setIsPaused: (state, action: PayloadAction<boolean>) => {
+      state.isPaused = action.payload;
+    },
   },
 });
 
@@ -69,6 +95,11 @@ export const {
   finishDownload,
   cancelDownload,
   quitFromQueue,
+  setBrowserUse,
+  setReadyDownload,
+  setAutomaticDownload,
+  setMaxConcurrentDownloads,
+  setIsPaused,
 } = downloadSlice.actions;
 
 export default downloadSlice.reducer;

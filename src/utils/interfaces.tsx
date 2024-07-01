@@ -1,11 +1,12 @@
 export interface Download {
   id: string;
+  isReady: boolean;
   fileUrl: string;
   fileName: string;
   date: Date;
   anime: string;
   episodeId: number;
-  description: string;
+  title: string;
   imageSrc: string;
   progress: number;
   totalSize?: number;
@@ -13,6 +14,6 @@ export interface Download {
 
 export interface Saved {
   animeId: string;
-  title: string;
+  name: string;
   imageSrc: string;
 }

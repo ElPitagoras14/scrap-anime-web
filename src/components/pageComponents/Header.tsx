@@ -5,9 +5,10 @@ import { ModeToggle } from "../ModeToggle";
 import { TypographyH4, TypographyH5 } from "../ui/typography";
 import { Input } from "@/components/ui/input";
 import { Separator } from "../ui/separator";
-import { Search } from "lucide-react";
+import { Search, Settings } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
 
 export const Header = () => {
   const [animeName, setAnimeName] = useState<string>("");
@@ -48,6 +49,15 @@ export const Header = () => {
               onKeyDown={handleKeyDown}
             />
             <ModeToggle></ModeToggle>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => {
+                router.push("/settings");
+              }}
+            >
+              <Settings></Settings>
+            </Button>
           </div>
         </div>
       </nav>

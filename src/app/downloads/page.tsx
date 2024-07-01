@@ -8,14 +8,20 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { TypographyH2 } from "@/components/ui/typography";
-import { cancelDownload, quitFromQueue } from "@/redux/features/downloadSlice";
+import { Switch } from "@/components/ui/switch";
+import { TypographyH2, TypographyH5 } from "@/components/ui/typography";
+import {
+  cancelDownload,
+  quitFromQueue,
+  setIsPaused,
+  setReadyDownload,
+} from "@/redux/features/downloadSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Download } from "@/utils/interfaces";
 import { useState } from "react";
 
 export default function Downloads() {
-  const { queue, downloading } = useAppSelector(
+  const { queue, downloading, isPaused } = useAppSelector(
     (state: { downloadReducer: any }) => state.downloadReducer
   );
   const dispatch = useAppDispatch();
@@ -44,12 +50,29 @@ export default function Downloads() {
     dispatch(quitFromQueue({ id }));
   };
 
+  const handlePlayDownload = (id: string) => {
+    const currDownload = showQueue.find((d) => d.id === id);
+    if (!currDownload) return;
+    dispatch(setReadyDownload({ id }));
+  };
+
   return (
     <>
       <Header></Header>
       <main className="flex flex-col items-center py-10">
         <div className="w-[60%] space-y-4">
-          <TypographyH2 className="">Downloads History</TypographyH2>
+          <div className="flex justify-between items-center">
+            <TypographyH2>Downloads</TypographyH2>
+            <div className="flex space-x-4 items-center">
+              <Switch
+                checked={isPaused}
+                onCheckedChange={(checked) => {
+                  dispatch(setIsPaused(checked));
+                }}
+              ></Switch>
+              <TypographyH5>Pause</TypographyH5>
+            </div>
+          </div>
           <Accordion type="multiple">
             <AccordionItem value="downloading">
               <AccordionTrigger>
@@ -60,7 +83,7 @@ export default function Downloads() {
                   const {
                     id,
                     anime,
-                    description,
+                    title,
                     totalSize,
                     imageSrc,
                     date,
@@ -70,13 +93,14 @@ export default function Downloads() {
                     <DownloadCard
                       key={id}
                       anime={anime}
-                      description={description}
+                      title={title}
                       imageSrc={imageSrc}
                       date={date}
                       isFinished={false}
                       progress={progress}
                       totalSize={totalSize}
-                      fn={() => handleCancelDownload(id)}
+                      deleteFn={() => handleCancelDownload(id)}
+                      isReady
                     ></DownloadCard>
                   );
                 })}
@@ -89,31 +113,30 @@ export default function Downloads() {
                   const {
                     id,
                     anime,
-                    description,
+                    title,
                     imageSrc,
                     totalSize,
                     date,
                     progress,
                   } = download || {};
+                  const isReady = showQueue.find((d) => d.id === id)?.isReady;
                   return (
                     <DownloadCard
                       key={id}
                       anime={anime}
-                      description={description}
+                      title={title}
                       imageSrc={imageSrc}
                       date={date}
-                      isFinished={true}
+                      isFinished={false}
                       progress={progress}
                       totalSize={totalSize}
-                      fn={() => handleQuitFromQueue(id)}
+                      deleteFn={() => handleQuitFromQueue(id)}
+                      playFn={() => handlePlayDownload(id)}
+                      isReady={isReady}
                     ></DownloadCard>
                   );
                 })}
               </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="history">
-              <AccordionTrigger>History</AccordionTrigger>
-              <AccordionContent className="flex flex-col space-y-4"></AccordionContent>
             </AccordionItem>
           </Accordion>
         </div>
