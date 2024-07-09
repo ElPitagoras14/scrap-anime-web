@@ -79,9 +79,6 @@ export default function Downloads() {
 
     const controller = new AbortController();
     const signal = controller.signal;
-    console.log("Signal", signal);
-    console.log("Starting download", id);
-    console.log("Controller", controller);
     setControllers((prevControllers) => ({
       ...prevControllers,
       [id]: controller,
@@ -114,7 +111,6 @@ export default function Downloads() {
         link.remove();
 
         dispatch(finishDownload({ id }));
-        startNextDownload();
       })
       .catch((error) => {
         console.error("Error downloading the file", error);
@@ -125,6 +121,7 @@ export default function Downloads() {
 
   useEffect(() => {
     startNextDownload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queue, downloading, dispatch, isPaused]);
 
   const handleCancelDownload = (id: string) => {
@@ -156,7 +153,7 @@ export default function Downloads() {
             <div className="flex flex-col">
               <TypographyH2>Downloads</TypographyH2>
               <TypographySmall>
-                Please don't change the page during a download when app use is
+                Please do not change the page during a download when app use is
                 active.
               </TypographySmall>
             </div>
