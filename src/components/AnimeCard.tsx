@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import axios from "axios";
+import { Icons } from "./ui/icons";
 
 interface AnimeCardProps {
   name: string;
@@ -34,12 +35,14 @@ export const AnimeCard = ({
 
   const [isSaved, setIsSaved] = useState<boolean>(saved);
   const [showBookmark, setShowBookmark] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setShowBookmark(isSaved);
   }, [isSaved]);
 
   const saveAnime = () => {
+    setIsLoading(true);
     const options = {
       method: "POST",
       headers: {
@@ -50,6 +53,7 @@ export const AnimeCard = ({
         anime_id: animeId,
         name,
         image_src: imageSrc,
+        week_day: null,
       },
     };
     axios(options)
@@ -64,10 +68,14 @@ export const AnimeCard = ({
           title: "Error saving anime",
           description: "Please try again later",
         });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
   const unsaveAnime = () => {
+    setIsLoading(true);
     const options = {
       method: "DELETE",
       headers: {
@@ -87,6 +95,9 @@ export const AnimeCard = ({
           title: "Error removing anime",
           description: "Please try again later",
         });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -130,7 +141,9 @@ export const AnimeCard = ({
       >
         <TooltipProvider>
           <Tooltip>
-            {isSaved ? (
+            {isLoading ? (
+              <Icons.spinner className="h-6 w-6 mb-1 animate-spin" />
+            ) : isSaved ? (
               <>
                 <TooltipTrigger>
                   <Bookmark

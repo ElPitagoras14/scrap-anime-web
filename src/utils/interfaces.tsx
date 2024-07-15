@@ -3,7 +3,7 @@ export interface Download {
   isReady: boolean;
   fileUrl: string;
   fileName: string;
-  date: Date;
+  date: string;
   anime: string;
   episodeId: number;
   title: string;
@@ -16,4 +16,5 @@ export interface Saved {
   animeId: string;
   name: string;
   imageSrc: string;
+  weekDay: string;
 }

@@ -44,7 +44,7 @@ export const EpisodeInfo = ({
         isReady: false,
         fileUrl,
         fileName: `${anime} - Episode ${episodeId}.mp4`,
-        date: new Date(),
+        date: new Date().toISOString(),
         anime,
         episodeId,
         title,

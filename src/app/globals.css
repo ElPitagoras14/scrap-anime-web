@@ -57,3 +57,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+body::-webkit-scrollbar {
+  width: 5px;
+}
+
+body::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 10px 10px 8px hsl(var(--background));
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary))
+}
+
+nav {
+  background-color: hsl(var(--background));
+}

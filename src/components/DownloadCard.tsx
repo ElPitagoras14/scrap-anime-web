@@ -7,12 +7,13 @@ import { Button } from "./ui/button";
 import { format, set } from "date-fns";
 import { useState } from "react";
 import { Icons } from "./ui/icons";
+import { useAppSelector } from "@/redux/hooks";
 
 interface DownloadCardProps {
   anime: string;
   title: string;
   imageSrc: string;
-  date: Date;
+  date: string;
   isFinished: boolean;
   progress: number;
   totalSize?: number;
@@ -41,6 +42,9 @@ export const DownloadCard = ({
   deleteFn,
   playFn,
 }: DownloadCardProps) => {
+  const { browserUse } = useAppSelector(
+    (state: { downloadReducer: any }) => state.downloadReducer
+  );
   const newDate = new Date(date);
   const formattedDate = format(newDate, "yyyy-MM-dd HH:mm");
 
@@ -72,7 +76,8 @@ export const DownloadCard = ({
             progressColor={isFinished ? "bg-accent" : "bg-primary"}
           ></Progress>
         </div>
-        {!isReady &&
+        {browserUse &&
+          !isReady &&
           (!isLoadingPlay ? (
             <Button
               className="absolute top-2 end-12 rounded-full m-0 px-2 py-2"

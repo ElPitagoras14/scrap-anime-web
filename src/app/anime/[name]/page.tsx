@@ -43,6 +43,7 @@ interface AnimeInfo {
   finished: boolean;
   description: string;
   imageSrc: string;
+  weekDay: string | null;
 }
 
 export default function AnimeDetail({ params }: { params: { name: string } }) {
@@ -52,8 +53,9 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
     finished: false,
     description: "",
     imageSrc: "",
+    weekDay: null,
   });
-  const { name, finished, description, imageSrc } = animeInfo || {};
+  const { name, finished, description, imageSrc, weekDay } = animeInfo || {};
   const [streamingLinks, setStreamingLinks] = useState([]);
 
   const { toast } = useToast();
@@ -64,6 +66,7 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
   const [isLoadingEpisodes, setIsLoadingEpisodes] = useState(true);
   const [isLoadingDownload, setIsLoadingDownload] = useState(false);
   const [isLoadingSavedInfo, setIsLoadingSavedInfo] = useState(true);
+  const [isLoadingSavingAnime, setIsLoadingSavingAnime] = useState(false);
 
   const [range, setRange] = useState<string>("");
 
@@ -181,7 +184,7 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
               id: uuidv4(),
               fileUrl: link,
               fileName: `${animeId} - Episode ${episodeId}.mp4`,
-              date: new Date(),
+              date: new Date().toISOString(),
               anime: animeId,
               isReady: false,
               episodeId,
@@ -209,6 +212,7 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
   };
 
   const saveAnime = () => {
+    setIsLoadingSavingAnime(true);
     const options = {
       method: "POST",
       headers: {
@@ -219,6 +223,7 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
         anime_id: animeId,
         name,
         image_src: imageSrc,
+        week_day: weekDay,
       },
     };
     axios(options)
@@ -233,10 +238,14 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
           title: "Error saving anime",
           description: "Please try again later.",
         });
+      })
+      .finally(() => {
+        setIsLoadingSavingAnime(false);
       });
   };
 
   const unsaveAnime = () => {
+    setIsLoadingSavingAnime(true);
     const options = {
       method: "DELETE",
       headers: {
@@ -256,6 +265,9 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
           title: "Error removing anime",
           description: "Please try again later.",
         });
+      })
+      .finally(() => {
+        setIsLoadingSavingAnime(false);
       });
   };
 

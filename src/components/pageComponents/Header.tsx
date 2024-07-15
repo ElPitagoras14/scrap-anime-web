@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { ModeToggle } from "../ModeToggle";
-import { TypographyH4, TypographyH5 } from "../ui/typography";
+import {
+  TypographyH4,
+  TypographyH5,
+} from "../ui/typography";
 import { Input } from "@/components/ui/input";
 import { Separator } from "../ui/separator";
-import { Search, Settings } from "lucide-react";
+import { Search, Settings, CalendarDays, Download } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
@@ -33,13 +36,20 @@ export const Header = () => {
             <TypographyH4>Anime Scraper</TypographyH4>
           </div>
           <div className="flex items-center space-x-6 text-nowrap">
-            <Link href={"/downloads"} className="hover:text-primary">
-              <TypographyH5>
-                Downloads {queue.length > 0 ? `(${queue.length})` : ""}
-              </TypographyH5>
-            </Link>
             <Link href={"/saved"} className="hover:text-primary">
               <TypographyH5>Saved Anime</TypographyH5>
+            </Link>
+            <Link href={"/calendar"} className="hover:text-primary">
+              <CalendarDays></CalendarDays>
+            </Link>
+            <Link
+              href={"/downloads"}
+              className="hover:text-primary flex items-center space-x-1"
+            >
+              <Download></Download>
+              <span className="mt-0">
+                {queue.length > 0 ? `(${queue.length})` : ""}
+              </span>
             </Link>
             <Input
               value={animeName}
