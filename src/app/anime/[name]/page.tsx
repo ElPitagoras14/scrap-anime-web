@@ -308,7 +308,9 @@ export default function AnimeDetail({ params }: { params: { name: string } }) {
               >
                 <TooltipProvider>
                   <Tooltip>
-                    {isSaved ? (
+                    {isLoadingSavingAnime ? (
+                      <Icons.spinner className="h-6 w-6 mb-1 animate-spin" />
+                    ) : isSaved ? (
                       <>
                         <TooltipTrigger>
                           <Bookmark
