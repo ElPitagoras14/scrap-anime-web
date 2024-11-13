@@ -3,7 +3,6 @@
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
-import { useToast } from "../ui/use-toast";
 import { useEffect, useState } from "react";
 import { Icons } from "../ui/icons";
 
@@ -26,7 +25,6 @@ export default function ProtectedPage({
   useEffect(() => {
     (async () => {
       if (status === "authenticated" && token && !sessionExpired) {
-        console.log("Checking token expiration");
         const { exp } = jwtDecode(token);
         const now = Date.now() / 1000;
 

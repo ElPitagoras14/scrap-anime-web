@@ -126,9 +126,7 @@ export default function Downloads() {
 
   const handleCancelDownload = (id: string) => {
     const controller = controllers[id];
-    console.log("Controller-Cancel", controller);
     if (controller) {
-      console.log("Aborting download", id);
       controller.abort();
     }
     dispatch(cancelDownload({ id }));
@@ -196,21 +194,14 @@ export default function Downloads() {
               </AccordionTrigger>
               <AccordionContent className="flex flex-col space-y-4">
                 {downloading.map((download: Download) => {
-                  const {
-                    id,
-                    anime,
-                    name,
-                    totalSize,
-                    imageSrc,
-                    date,
-                    progress,
-                  } = download || {};
+                  const { id, anime, name, totalSize, image, date, progress } =
+                    download || {};
                   return (
                     <DownloadCard
                       key={id}
                       anime={anime}
                       episodeName={name}
-                      imageSrc={imageSrc}
+                      image={image}
                       date={date}
                       isFinished={false}
                       progress={progress}
@@ -226,15 +217,8 @@ export default function Downloads() {
               <AccordionTrigger>Queue ({queue.length})</AccordionTrigger>
               <AccordionContent className="flex flex-col space-y-4">
                 {queue.map((download: Download) => {
-                  const {
-                    id,
-                    anime,
-                    name,
-                    imageSrc,
-                    totalSize,
-                    date,
-                    progress,
-                  } = download || {};
+                  const { id, anime, name, image, totalSize, date, progress } =
+                    download || {};
                   const isReady = queue.find(
                     (download: Download) => download.id === id
                   )?.isReady;
@@ -243,7 +227,7 @@ export default function Downloads() {
                       key={id}
                       anime={anime}
                       episodeName={name}
-                      imageSrc={imageSrc}
+                      image={image}
                       date={date}
                       isFinished={false}
                       progress={progress}
