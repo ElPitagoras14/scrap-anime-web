@@ -25,18 +25,20 @@ def configure_logs():
         format=logger_format,
     )
 
-    logger.add(
-        LOG_APP_PATH,
-        rotation="10 MB",
-        retention="30 days",
-        level="INFO",
-        format=logger_format,
-    )
+    if LOG_APP_PATH:
+        logger.add(
+            LOG_APP_PATH,
+            rotation="10 MB",
+            retention="30 days",
+            level="INFO",
+            format=logger_format,
+        )
 
-    logger.add(
-        LOG_ERROR_PATH,
-        rotation="1 day",
-        retention="30 days",
-        level="ERROR",
-        format=logger_format,
-    )
+    if LOG_ERROR_PATH:
+        logger.add(
+            LOG_ERROR_PATH,
+            rotation="1 day",
+            retention="30 days",
+            level="ERROR",
+            format=logger_format,
+        )
