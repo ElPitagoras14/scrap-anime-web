@@ -1,13 +1,13 @@
 version: "3.8"
 
 services:
-  scraper-web:
+  scraper-web-remote:
     build: .
     ports:
-      - "3000:3000"
+      - "${PORT}:${PORT}"
     environment:
       - NODE_ENV=production
-    container_name: scraper-web
+    container_name: scraper-web-remote
     restart: on-failure
     networks:
       - server-network
