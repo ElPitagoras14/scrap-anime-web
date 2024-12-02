@@ -1,5 +1,8 @@
 # Anime Scraper Frontend
 
+> [!CAUTION]
+> This repository has been migrated to be part of a monorepo at [anime-scraper](https://github.com/ElPitagoras14/anime-scraper).
+
 ## Description
 
 Anime Scraper Frontend is a web application built with Next.js to display and manage anime data and download links.
